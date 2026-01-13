@@ -1,5 +1,6 @@
 import streamlit as st
 from PIL import Image
+import re
 
 st.set_page_config(page_title="Price Compare", page_icon="🛒")
 st.title("🛒 Price Comparison App")
@@ -71,5 +72,6 @@ if st.session_state.products:
 if st.button("🗑 Clear all"):
     st.session_state.products = []
     st.experimental_rerun()
+
 
 
