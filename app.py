@@ -1,7 +1,5 @@
 import streamlit as st
 from PIL import Image
-from pyzbar.pyzbar import decode
-import re
 
 st.set_page_config(page_title="Price Compare", page_icon="🛒")
 st.title("🛒 Price Comparison App")
@@ -34,7 +32,6 @@ if st.button("📷 Scan Barcode"):
     if image:
         img = Image.open(image).convert("L")
         img = img.resize((img.width * 2, img.height * 2))
-        codes = decode(img)
 
         if codes:
             code = codes[0].data.decode("utf-8")
@@ -74,4 +71,5 @@ if st.session_state.products:
 if st.button("🗑 Clear all"):
     st.session_state.products = []
     st.experimental_rerun()
+
 
