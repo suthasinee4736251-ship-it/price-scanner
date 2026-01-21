@@ -88,10 +88,10 @@ with col1:
 
     st.caption("Price presets")
     p1, p2, p3, p4 = st.columns(4)
-    p1.button("+10", on_click=add_price, args=(10.0,))
-    p2.button("+50", on_click=add_price, args=(50.0,))
-    p3.button("+100", on_click=add_price, args=(100.0,))
-    p4.button("+500", on_click=add_price, args=(500.0,))
+    p1.button("+10", key="price_10", on_click=add_price, args=(10.0,))
+    p2.button("+50", key="price_50", on_click=add_price, args=(50.0,))
+    p3.button("+100", key="price_100", on_click=add_price, args=(100.0,))
+    p4.button("+500", key="price_500", on_click=add_price, args=(500.0,))
 
 # -------- AMOUNT --------
 with col2:
@@ -106,10 +106,10 @@ with col2:
 
     st.caption("Amount presets")
     a1, a2, a3, a4 = st.columns(4)
-    a1.button("+10", on_click=add_amount, args=(10.0,))
-    a2.button("+50", on_click=add_amount, args=(50.0,))
-    a3.button("+100", on_click=add_amount, args=(100.0,))
-    a4.button("+1000", on_click=add_amount, args=(1000.0,))
+    a1.button("+10", key="amount_10", on_click=add_amount, args=(10.0,))
+    a2.button("+50", key="amount_50", on_click=add_amount, args=(50.0,))
+    a3.button("+100", key="amount_100", on_click=add_amount, args=(100.0,))
+    a4.button("+1000", key="amount_1000", on_click=add_amount, args=(1000.0,))
 
 # ---------------- QUANTITY ----------------
 st.markdown("---")
@@ -155,6 +155,7 @@ if st.session_state.products:
         st.session_state.products.clear()
 else:
     st.info("➕ Add products to compare")
+
 
 
 
