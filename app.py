@@ -13,6 +13,7 @@ defaults = {
     "price": 0.0,
     "amount": 0.0,
     "quantity": 1,
+    "discount": 0.0,
 }
 
 for k, v in defaults.items():
@@ -53,11 +54,11 @@ with col1:
         key="price_input"
     )
 
-    b1, b2 = st.columns(2)
-    if b1.button("+10", key="price_plus_10"):
-        st.session_state.price += 10
-    if b2.button("+50", key="price_plus_50"):
-        st.session_state.price += 50
+    p1, p2 = st.columns(2)
+    if p1.button("+10", key="price_plus_10"):
+        st.session_state.price += 10.0
+    if p2.button("+50", key="price_plus_50"):
+        st.session_state.price += 50.0
 
 with col2:
     st.session_state.amount = st.number_input(
@@ -68,22 +69,23 @@ with col2:
         key="amount_input"
     )
 
-    b3, b4 = st.columns(2)
-    if b3.button("+10", key="amount_plus_10"):
-        st.session_state.amount += 10
-    if b4.button("+100", key="amount_plus_100"):
-        st.session_state.amount += 100
+    a1, a2 = st.columns(2)
+    if a1.button("+10", key="amount_plus_10"):
+        st.session_state.amount += 10.0
+    if a2.button("+100", key="amount_plus_100"):
+        st.session_state.amount += 100.0
 
-# ---------------- PRESETS ----------------
-st.caption("Quick amount presets")
+# ---------------- QUICK PRESETS ----------------
+st.markdown("**Quick amount presets**")
+
 preset_cols = st.columns(4)
 for value, key, col in zip(
     [250, 500, 1000, 1],
     ["preset_250", "preset_500", "preset_1000", "preset_1"],
     preset_cols
 ):
-    if col.button(str(value), key=key):
-        st.session_state.amount = value
+    if col.button(f"+{value}", key=key):
+        st.session_state.amount = float(value)
 
 # ---------------- QUANTITY ----------------
 st.markdown("---")
@@ -99,12 +101,20 @@ st.session_state.quantity = st.number_input(
 
 # ---------------- DISCOUNT ----------------
 st.markdown("---")
-st.subheader("🏷️ Discount (optional)")
+st.subheader("🏷️ Discount")
 
-discount = st.slider("Discount (%)", 0, 100, 0, key="discount_slider")
+st.session_state.discount = st.number_input(
+    "Discount (%)",
+    min_value=0.0,
+    max_value=100.0,
+    step=1.0,
+    value=st.session_state.discount,
+    key="discount_input"
+)
 
+# ---------------- CALCULATIONS ----------------
 total_price = st.session_state.price * st.session_state.quantity
-total_price *= (1 - discount / 100)
+total_price *= (1 - st.session_state.discount / 100)
 
 total_amount = st.session_state.amount * st.session_state.quantity
 
@@ -120,9 +130,11 @@ if st.button("✅ Add Product", use_container_width=True, key="add_product"):
             "unit_price": round(total_price / total_amount, 4)
         })
 
+        # reset inputs
         st.session_state.price = 0.0
         st.session_state.amount = 0.0
         st.session_state.quantity = 1
+        st.session_state.discount = 0.0
     else:
         st.warning("⚠️ Please enter valid product details")
 
@@ -158,6 +170,8 @@ if st.session_state.products:
         st.session_state.products.clear()
 else:
     st.info("➕ Add products to compare")
+
+
 
 
 
