@@ -8,41 +8,25 @@ st.set_page_config(
 )
 
 # ---------------- STATE ----------------
-for key, default in {
+defaults = {
     "products": [],
     "price": 0.0,
     "amount": 0.0,
     "quantity": 1,
-}.items():
-    if key not in st.session_state:
-        st.session_state[key] = default
+}
 
-# ---------------- SETTINGS ----------------
+for k, v in defaults.items():
+    if k not in st.session_state:
+        st.session_state[k] = v
+
+# ---------------- SIDEBAR ----------------
 st.sidebar.header("⚙️ Settings")
-
 currency = st.sidebar.selectbox("Currency", ["Baht", "USD", "EUR"])
-dark_mode = st.sidebar.toggle("🌙 Dark mode")
-
 unit = st.sidebar.selectbox("Unit", ["g", "ml", "pcs"])
-
-bg = "#1E1E1E" if dark_mode else "#FFFFFF"
-card = "#2A2A2A" if dark_mode else "#F6F6F6"
-text = "#FFFFFF" if dark_mode else "#000000"
-best_bg = "#1B5E20" if dark_mode else "#E8F5E9"
-
-# ---------------- STYLE ----------------
-st.markdown(
-    f"""
-    <style>
-    body {{ background-color: {bg}; color: {text}; }}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 # ---------------- HEADER ----------------
 st.markdown(
-    f"""
+    """
     <h1 style='text-align:center;'>🛒 Best Value Calculator</h1>
     <p style='text-align:center;color:gray'>
     Compare total cost and price per unit
@@ -65,13 +49,14 @@ with col1:
         f"💰 Price ({currency})",
         min_value=0.0,
         step=1.0,
-        value=st.session_state.price
+        value=st.session_state.price,
+        key="price_input"
     )
 
-    p1, p2 = st.columns(2)
-    if p1.button("+10"):
+    b1, b2 = st.columns(2)
+    if b1.button("+10", key="price_plus_10"):
         st.session_state.price += 10
-    if p2.button("+50"):
+    if b2.button("+50", key="price_plus_50"):
         st.session_state.price += 50
 
 with col2:
@@ -79,20 +64,25 @@ with col2:
         f"📏 Amount per product ({unit})",
         min_value=0.0,
         step=1.0,
-        value=st.session_state.amount
+        value=st.session_state.amount,
+        key="amount_input"
     )
 
-    a1, a2 = st.columns(2)
-    if a1.button("+10"):
+    b3, b4 = st.columns(2)
+    if b3.button("+10", key="amount_plus_10"):
         st.session_state.amount += 10
-    if a2.button("+100"):
+    if b4.button("+100", key="amount_plus_100"):
         st.session_state.amount += 100
 
 # ---------------- PRESETS ----------------
 st.caption("Quick amount presets")
 preset_cols = st.columns(4)
-for value, col in zip([250, 500, 1000, 1], preset_cols):
-    if col.button(str(value)):
+for value, key, col in zip(
+    [250, 500, 1000, 1],
+    ["preset_250", "preset_500", "preset_1000", "preset_1"],
+    preset_cols
+):
+    if col.button(str(value), key=key):
         st.session_state.amount = value
 
 # ---------------- QUANTITY ----------------
@@ -103,30 +93,31 @@ st.session_state.quantity = st.number_input(
     "Number of products bought",
     min_value=1,
     step=1,
-    value=st.session_state.quantity
+    value=st.session_state.quantity,
+    key="quantity_input"
 )
 
 # ---------------- DISCOUNT ----------------
 st.markdown("---")
 st.subheader("🏷️ Discount (optional)")
 
-discount = st.slider("Discount (%)", 0, 100, 0)
+discount = st.slider("Discount (%)", 0, 100, 0, key="discount_slider")
 
-final_price = st.session_state.price * st.session_state.quantity
-final_price *= (1 - discount / 100)
+total_price = st.session_state.price * st.session_state.quantity
+total_price *= (1 - discount / 100)
 
 total_amount = st.session_state.amount * st.session_state.quantity
 
 # ---------------- ADD BUTTON ----------------
 st.markdown("---")
-if st.button("✅ Add Product", use_container_width=True):
-    if name.strip() and total_amount > 0 and final_price > 0:
+if st.button("✅ Add Product", use_container_width=True, key="add_product"):
+    if name.strip() and total_price > 0 and total_amount > 0:
         st.session_state.products.append({
             "name": name,
-            "total_price": round(final_price, 2),
+            "quantity": st.session_state.quantity,
+            "total_price": round(total_price, 2),
             "total_amount": total_amount,
-            "unit_price": round(final_price / total_amount, 4),
-            "quantity": st.session_state.quantity
+            "unit_price": round(total_price / total_amount, 4)
         })
 
         st.session_state.price = 0.0
@@ -143,19 +134,17 @@ if st.session_state.products:
     best = min(st.session_state.products, key=lambda x: x["unit_price"])
 
     for p in st.session_state.products:
-        is_best = p == best
-
+        highlight = p == best
         st.markdown(
             f"""
             <div style="
                 padding:16px;
                 border-radius:14px;
                 margin-bottom:12px;
-                background:{best_bg if is_best else card};
-                border:2px solid {'#4CAF50' if is_best else '#CCC'};
-                color:{text};
+                background:{'#E8F5E9' if highlight else '#F6F6F6'};
+                border:2px solid {'#4CAF50' if highlight else '#DDD'};
             ">
-                <h4>{p['name']} {'🏆 Best Value' if is_best else ''}</h4>
+                <h4>{p['name']} {'🏆 Best Value' if highlight else ''}</h4>
                 🧮 Quantity: {p['quantity']}<br>
                 💰 Total price: {p['total_price']} {currency}<br>
                 📏 Total amount: {p['total_amount']} {unit}<br>
@@ -165,11 +154,13 @@ if st.session_state.products:
             unsafe_allow_html=True
         )
 
-    if st.button("🗑️ Clear all products", use_container_width=True):
+    if st.button("🗑️ Clear all products", use_container_width=True, key="clear_all"):
         st.session_state.products.clear()
-
 else:
     st.info("➕ Add products to compare")
+
+
+
 
 
 
