@@ -115,22 +115,40 @@ if st.session_state.products:
     best = min(st.session_state.products, key=lambda x: x["unit_price"])
 
     for p in st.session_state.products:
-        badge = t["best"] if p == best else ""
+        is_best = p == best
+
+        best_badge = (
+            "<span style='background-color:#2ecc71;color:white;"
+            "padding:2px 8px;border-radius:8px;font-size:12px;'>"
+            f"{t['best']}</span>"
+            if is_best else ""
+        )
+
         st.markdown(
             f"""
-            **{p['name']}** {badge}  
-            {t["quantity"]}: {p["quantity"]}  
-            {t["price"]}: {p["total_price"]} {currency}  
-            {t["amount"]}: {p["total_amount"]} {unit}  
-            **{p["unit_price"]} {currency}/{unit}**
-            ---
-            """
+            <div style="padding:10px 0;">
+                <div style="font-size:16px;">
+                    <strong>{p['name']}</strong> {best_badge}
+                </div>
+                <div style="font-size:13px;color:#666;">
+                    {t["quantity"]}: {p["quantity"]}<br>
+                    {t["price"]}: {p["total_price"]} {currency}<br>
+                    {t["amount"]}: {p["total_amount"]} {unit}
+                </div>
+                <div style="margin-top:4px;font-size:14px;">
+                    <strong>{p["unit_price"]} {currency}/{unit}</strong>
+                </div>
+                <hr>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
     if st.button(t["clear"]):
         st.session_state.products.clear()
 else:
     st.info(t["empty"])
+
 
 
 
