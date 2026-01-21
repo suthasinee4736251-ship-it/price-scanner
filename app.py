@@ -8,17 +8,8 @@ st.set_page_config(
 )
 
 # ---------------- STATE ----------------
-defaults = {
-    "products": [],
-    "price": 0.0,
-    "amount": 0.0,
-    "quantity": 1,
-    "discount": 0.0,
-}
-
-for k, v in defaults.items():
-    if k not in st.session_state:
-        st.session_state[k] = v
+if "products" not in st.session_state:
+    st.session_state.products = []
 
 # ---------------- SIDEBAR ----------------
 st.sidebar.header("⚙️ Settings")
@@ -38,103 +29,66 @@ st.markdown(
 
 st.markdown("---")
 
-# ---------------- ADD PRODUCT ----------------
-st.subheader("➕ Add Product")
+# ================= FORM =================
+with st.form("add_product_form"):
 
-name = st.text_input("📦 Product name")
+    st.subheader("➕ Add Product")
 
-col1, col2 = st.columns(2)
+    name = st.text_input("📦 Product name")
 
-with col1:
-    st.session_state.price = st.number_input(
-        f"💰 Price ({currency})",
+    col1, col2 = st.columns(2)
+
+    with col1:
+        price = st.number_input(
+            f"💰 Price ({currency})",
+            min_value=0.0,
+            step=1.0
+        )
+
+    with col2:
+        amount = st.number_input(
+            f"📏 Amount per product ({unit})",
+            min_value=0.0,
+            step=1.0
+        )
+
+    st.markdown("**Quick amount presets**")
+    preset_cols = st.columns(4)
+    preset_value = None
+
+    for value, col in zip([250, 500, 1000, 1], preset_cols):
+        if col.form_submit_button(f"+{value}"):
+            preset_value = float(value)
+
+    if preset_value is not None:
+        amount = preset_value
+
+    st.subheader("🧮 Quantity")
+    quantity = st.number_input("Number of products bought", min_value=1, step=1)
+
+    st.subheader("🏷️ Discount")
+    discount = st.number_input(
+        "Discount (%)",
         min_value=0.0,
-        step=1.0,
-        value=st.session_state.price,
-        key="price_input"
+        max_value=100.0,
+        step=1.0
     )
 
-    p1, p2 = st.columns(2)
-    if p1.button("+10", key="price_plus_10"):
-        st.session_state.price += 10.0
-    if p2.button("+50", key="price_plus_50"):
-        st.session_state.price += 50.0
+    submitted = st.form_submit_button("✅ Add Product")
 
-with col2:
-    st.session_state.amount = st.number_input(
-        f"📏 Amount per product ({unit})",
-        min_value=0.0,
-        step=1.0,
-        value=st.session_state.amount,
-        key="amount_input"
-    )
+# ================= LOGIC =================
+if submitted:
+    total_price = price * quantity * (1 - discount / 100)
+    total_amount = amount * quantity
 
-    a1, a2 = st.columns(2)
-    if a1.button("+10", key="amount_plus_10"):
-        st.session_state.amount += 10.0
-    if a2.button("+100", key="amount_plus_100"):
-        st.session_state.amount += 100.0
-
-# ---------------- QUICK PRESETS ----------------
-st.markdown("**Quick amount presets**")
-
-preset_cols = st.columns(4)
-for value, key, col in zip(
-    [250, 500, 1000, 1],
-    ["preset_250", "preset_500", "preset_1000", "preset_1"],
-    preset_cols
-):
-    if col.button(f"+{value}", key=key):
-        st.session_state.amount = float(value)
-
-# ---------------- QUANTITY ----------------
-st.markdown("---")
-st.subheader("🧮 Quantity")
-
-st.session_state.quantity = st.number_input(
-    "Number of products bought",
-    min_value=1,
-    step=1,
-    value=st.session_state.quantity,
-    key="quantity_input"
-)
-
-# ---------------- DISCOUNT ----------------
-st.markdown("---")
-st.subheader("🏷️ Discount")
-
-st.session_state.discount = st.number_input(
-    "Discount (%)",
-    min_value=0.0,
-    max_value=100.0,
-    step=1.0,
-    value=st.session_state.discount,
-    key="discount_input"
-)
-
-# ---------------- CALCULATIONS ----------------
-total_price = st.session_state.price * st.session_state.quantity
-total_price *= (1 - st.session_state.discount / 100)
-
-total_amount = st.session_state.amount * st.session_state.quantity
-
-# ---------------- ADD BUTTON ----------------
-st.markdown("---")
-if st.button("✅ Add Product", use_container_width=True, key="add_product"):
     if name.strip() and total_price > 0 and total_amount > 0:
         st.session_state.products.append({
             "name": name,
-            "quantity": st.session_state.quantity,
+            "quantity": quantity,
             "total_price": round(total_price, 2),
             "total_amount": total_amount,
             "unit_price": round(total_price / total_amount, 4)
         })
-
-        # reset inputs
-        st.session_state.price = 0.0
-        st.session_state.amount = 0.0
-        st.session_state.quantity = 1
-        st.session_state.discount = 0.0
     else:
         st.warning("⚠️ Please enter valid product details")
 
@@ -166,10 +120,11 @@ if st.session_state.products:
             unsafe_allow_html=True
         )
 
-    if st.button("🗑️ Clear all products", use_container_width=True, key="clear_all"):
+    if st.button("🗑️ Clear all products", use_container_width=True):
         st.session_state.products.clear()
 else:
     st.info("➕ Add products to compare")
+
 
 
 
