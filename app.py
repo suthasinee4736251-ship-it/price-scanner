@@ -2,11 +2,6 @@ import streamlit as st
 
 st.set_page_config(page_title="Best Value Calculator", layout="centered")
 
-with st.sidebar:
-    st.markdown("## ⚙️ Settings")
-    show_discount = st.checkbox("แสดงช่องส่วนลด (%)", value=True)
-
-
 # ---------- TRANSLATIONS ----------
 TEXT = {
     "en": {
@@ -153,6 +148,7 @@ if st.session_state.products:
         st.session_state.products.clear()
 else:
     st.info(t["empty"])
+
 
 
 
