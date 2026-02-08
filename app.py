@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(page_title="Best Value Calculator", layout="centered")
 
-with st.expander("ℹ️ How to use / วิธีใช้งาน"):
+ with st.expander("ℹ️ How to use / วิธีใช้งาน"):
 st.info("""
 
 ℹ️ **วิธีใช้งานแอป**
@@ -187,6 +187,7 @@ if st.session_state.products:
         st.session_state.products.clear()
 else:
     st.info(t["empty"])
+
 
 
 
