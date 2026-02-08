@@ -2,6 +2,44 @@ import streamlit as st
 
 st.set_page_config(page_title="Best Value Calculator", layout="centered")
 
+st.info("""
+
+ℹ️ **วิธีใช้งานแอป**
+
+1️⃣ กรอกชื่อสินค้า ราคา และปริมาณ  
+→ แอปจะคำนวณ *ราคาต่อหน่วย* ให้อัตโนมัติ
+
+2️⃣ ใส่จำนวนชิ้น (Quantity)  
+→ ใช้กรณีซื้อหลายชิ้น เช่น 2 หรือ 3 ชิ้น
+
+3️⃣ (ถ้ามี) ใส่ส่วนลด (%)  
+→ ระบบจะคำนวณราคาสุทธิให้
+
+⚙️ **การตั้งค่า**
+- เปลี่ยนภาษา: อยู่ที่เมนู ⚙️ Settings
+- เปลี่ยนหน่วย (กรัม / มล. / ชิ้น): อยู่ใน ⚙️ Settings
+
+✅ แอปจะแสดงสินค้าที่คุ้มค่าที่สุดด้วยคำว่า **BEST VALUE**
+
+ℹ️ **How to use the app**
+
+1️⃣ Enter the product name, price, and amount  
+→ The app will automatically calculate the *price per unit*
+
+2️⃣ Enter the quantity  
+→ Use this when buying multiple items (e.g. 2 or 3 pieces)
+
+3️⃣ (Optional) Enter discount (%)  
+→ The app will calculate the final price automatically
+
+⚙️ **Settings**
+- Change language: Go to ⚙️ Settings
+- Change unit (gram / ml / piece): Also in ⚙️ Settings
+
+✅ The app will highlight the product with the **BEST VALUE**
+""")
+
+
 # ---------- TRANSLATIONS ----------
 TEXT = {
     "en": {
@@ -148,6 +186,7 @@ if st.session_state.products:
         st.session_state.products.clear()
 else:
     st.info(t["empty"])
+
 
 
 
