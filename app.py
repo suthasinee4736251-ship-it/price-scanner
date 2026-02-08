@@ -2,6 +2,7 @@ import streamlit as st
 
 st.set_page_config(page_title="Best Value Calculator", layout="centered")
 
+with st.expander("ℹ️ How to use / วิธีใช้งาน"):
 st.info("""
 
 ℹ️ **วิธีใช้งานแอป**
@@ -16,8 +17,8 @@ st.info("""
 → ระบบจะคำนวณราคาสุทธิให้
 
 ⚙️ **การตั้งค่า**
-- เปลี่ยนภาษา: อยู่ที่เมนู ⚙️ Settings
-- เปลี่ยนหน่วย (กรัม / มล. / ชิ้น): อยู่ใน ⚙️ Settings
+- เปลี่ยนภาษา: คลิกที่ลูกศร >> ที่มุมซ้ายบน
+- เปลี่ยนหน่วย (กรัม / มล. / ชิ้น): คลิกที่ลูกศร >> ที่มุมซ้ายบน
 
 ✅ แอปจะแสดงสินค้าที่คุ้มค่าที่สุดด้วยคำว่า **BEST VALUE**
 
@@ -33,8 +34,8 @@ st.info("""
 → The app will calculate the final price automatically
 
 ⚙️ **Settings**
-- Change language: Go to ⚙️ Settings
-- Change unit (gram / ml / piece): Also in ⚙️ Settings
+- Change language: Go to the >> arrows on the top left corner
+- Change unit (gram / ml / piece):  Go to the >> arrows on the top left corner
 
 ✅ The app will highlight the product with the **BEST VALUE**
 """)
@@ -186,6 +187,7 @@ if st.session_state.products:
         st.session_state.products.clear()
 else:
     st.info(t["empty"])
+
 
 
 
