@@ -129,8 +129,8 @@ discount = st.number_input(t["discount"], min_value=0.0, max_value=100.0, step=1
 # ---------- ADD ----------
 if st.button(t["add"], use_container_width=True):
 
-    total_price = price * quantity * (1 - discount / 100)
-    total_amount = amount * quantity
+    total_price = price * (1 - discount / 100)
+    total_amount = amount
 
     if not name.strip():
         st.warning(t["warning_name"])
@@ -187,6 +187,7 @@ if st.session_state.products:
         st.session_state.products.clear()
 else:
     st.info(t["empty"])
+
 
 
 
